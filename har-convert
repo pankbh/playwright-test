@@ -1,0 +1,44 @@
+import { readFileSync,writeFileSync } from "fs";
+function filterandSaveApiEntries(inputFilename,outputFileName){
+    try{
+        const fileContent = readFileSync(inputFilename,'utf8')
+const harObject = JSON.parse(fileContent);
+
+harObject.log.entries = harObject.log.entries
+    .filter(entry => {
+        const url =entry.request.url;
+        return url.includes('epf-auth') //&& !url.toLowerCase().endsWith('.jpeg')
+
+    })
+    .map(entry => {
+        if(entry.request){
+            entry.request.headers=[];
+            delete entry.request.cookies;
+            delete entry.request.httpVersion;
+            delete entry.request.headersSize;
+            delete entry.request.bodySize;
+        }
+        if(entry.response){
+            entry.response.headers=[];
+            delete entry.response.cookies;
+            delete entry.response.httpVersion;
+            delete entry.response.statusText;
+            delete entry.response.headersSize;
+            delete entry.response.bodySize;
+            delete entry.response.redirectURL;
+        }
+
+        delete entry.cache;
+        delete entry.timings;
+        return entry;
+    });
+         const jsonString = JSON.stringify(harObject,null,2)   ;
+         writeFileSync(outputFileName,jsonString,'utf8');
+         console.log(`Filtered har file saved to:' ${outputFileName}`);
+} catch(error){
+    console.error('Error processing file',error);
+    throw error;
+}
+}
+
+filterandSaveApiEntries('network-traffic.har','filtered-har.json');
