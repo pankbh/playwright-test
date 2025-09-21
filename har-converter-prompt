@@ -1,0 +1,95 @@
+# HAR File Converter Prompt
+
+## Objective
+Create a JavaScript script that converts a Playwright-generated HAR file into a filtered JSON format, retaining only essential network traffic information.
+
+## Input
+- Source file: `network-traffic.har`
+- Target file: `filtered.json`
+
+## Requirements
+
+### File Handling
+1. Read the source HAR file (`network-traffic.har`)
+2. Process the content
+3. Write the filtered content to `filtered.json`
+
+### Filtering Rules
+1. Keep only the following fields for each entry:
+   - startedDateTime
+   - time
+   - request (keep essential request details , remove request cookies, httpVersion,bodySize)
+   - response (keep essential response details,remove request cookies, httpVersion,bodySize)
+2.  Filter each request url and only keep entry where url has `epf-auth`
+
+### Structure
+The output JSON should maintain this structure:
+```json
+{
+  "log": {
+    "version": "1.2",
+    "creator": {
+      "name": "Playwright",
+      "version": "1.54.0"
+    },
+    "browser": {
+      "name": "chromium",
+      "version": "139.0.7258.5"
+    },
+    "entries": [
+      {
+        "startedDateTime": "",
+        "time": 0,
+        "request": {
+            "method": "GET",
+            "url": "https://www.citivelocity.com/eppublic/welcome",
+            "headers": [
+            { "name": ":authority", "value": "www.citivelocity.com" },
+            { "name": ":method", "value": "GET" },
+            { "name": ":path", "value": "/login/polyfills.955aaef9c066705f.js" },
+            { "name": ":scheme", "value": "https" },
+            { "name": "accept", "value": "*/*" },
+            { "name": "accept-encoding", "value": "gzip, deflate, br, zstd" },
+            { "name": "accept-language", "value": "en-US" },
+            { "name": "cookie", "value": "ak_bmsc=9BBF5E03BE70C0EA8B2A10EFDB493633~000000000000000000000000000000~YAAQLhghF3TapfGYAQAAsgcj9Bwd4TFdaptEe1wzMhWoJBs2V2KWjtebulDSeiQKBXBjJjg4IpL2WObJpHWAwXqBMiy0lyM7oFKPgS5KdFIL9wYhi/dOYYsObd9s9667RkAWoM9AcxjiUVyS5GQnSKMBopQUiqnhQHD92HRjeNuP/UY0XeUJnkFY4a5FbYI7cy6L+4n6E/bCraf/FdkJJeF9TlW2J57WIJqj5t8ADx+N0+1SmNzxaklSLyRp+6b+1t2Jb9aJ7sPzIqHWz/ZwK3UaRlh1M+/O6SVrE8H1SJM0c0KMfUK53B0SC5hNwegLIhTnXqIiGPCOMBwrx8vD1y9KQcgj6koMvLCQWhaf8kSB7Yxe87795ICg8clxYDVUEyj2e9o9zHmn2/KL4DfQSZpmTF6fAxJxVAurdaJ0stdlddW31mfFCq9Pww==; CITI_SITE=USRUTH; x-citiportal-ua-track=EPCVZ3W73Z6XP7J19WMJKMOPCOKVRMMG95196861103@2; x-citiportal-csid=KjsFLfjZ6BCMFZmBsEK3PNASMFmG; OptanonConsent=isGpcEnabled=0&datestamp=Fri+Aug+29+2025+00%3A43%3A15+GMT-0400+(Eastern+Daylight+Time)&version=202505.1.0&browserGpcFlag=0&isIABGlobal=false&hosts=&landingPath=https%3A%2F%2Fwww.citivelocity.com%2Feppublic%2Fwelcome&groups=C0001%3A1%2CC0003%3A1%2CC0002%3A1%2CC0004%3A1%2CC0005%3A1; _cls_v=4146f26f-8dae-44a7-8cc9-38d46736b55c; _cls_s=64de94fb-4c6e-4c34-b2fa-3deb54c2bc2f:0; rto=c0; _abck=91FA1EAE123EB5F7FB0A3AAB58CB37E4~-1~YAAQLhghF2TfpfGYAQAA4g8j9A4rt2bMCN/dXR0ndQIf/mhMC8MfTuAPyrB3Htc5sum+vtFeqAD/cJQpwtfhgXaav9UV3e23ElL63MgyF6QWJ2C+FIjmgydGE5XLp7ozKVQ5YuKEEU1+KrkWordsUKMAV964bojedw+I+T5IhK86OSj1l4EjSqasxT6bt8YV5ljGuI3ZxcJxqXYqqBxAwsvhO0x3S6+fUQWw9TFkQrquWc2NE5+MOwF4bgn/9UC4IVM97lDJFiCYq3oTrDZPvE7GH5MUBrEvhU8JnS1Dc0GamSUWQGlFHxZ7/9HynAKPkI6TU5Pfv3iLb0+JbrPdk8avxVYFIhZLHikGfxZe+ylDP8xBh3vbvR3auoIBs0/kWftIYUDp5ErTYyDiI6R5eDWoerpMktCs6wGD3Fqc1mV8DTGYH6xMt8x4aTN+RLXR1kPg1b/ht/dHDjriHUqae6zX0lpN3wOhF1WV+64sOYFvp7rOaHXr2RUkvOeU7xaJG+hzUfF0ox821qraebJHT8Jt9PlGAjifLlZfNUygD4DzFx8hPtzgJ55IW5P+/o1Saq65XbJqaYD7mN/oDE4CPg==~-1~-1~-1~~; bm_sv=1795B8745696811727C7CE0513264918~YAAQLhghF0DgpfGYAQAA1RAj9BwjPbV7uc2pO0SpnrMzDm70mHW8TBPuEgVDsUZOUqzT/OdrIznSpZ47hWjJy6bmO2Gyw3gE6kJxXivUecODbNE1eCqAlUCIlS6cPfJjufwJ4DMSsKGhqyAlbrh7dcvuye4q6wJIwm5hpVIQA0hYDQ+TULY6hdN46aTsW3/Y5Qw7So1/nrNQFp4hDM0AerYUzJOE4X2LTVfuYwyiYWcMypXx45+YWRajRvvwk48DK5/hhm5b~1; bm_sz=45846701E89AF7525FAEE2A828A64942~YAAQLhghF0HgpfGYAQAA1RAj9ByJo5QuOxMJCR9LWtbctiLFyyV99BlF9nhr3+8Eb2pvSrpLx1HmW9hQxNBMkePAjySSk8axOdehcQyoNpBYvoBllfy6DAyEwUrxGKbM6YfcSwf1UuU/XXTJUr4PRddNbfHf41YDPoR3kIp2IaN7NAdimbcxBie67brY+emCGzJa6Ci25+sDQ4VAWrW/e4IJFL9DmAnaR8diPzYttHHUTa5pqCzvARzCOH3HXaW/V8E4bXAmJI/mrVWdGgLvGf/VQMHe5WJXPMMXPZyvxLynNXR9ab5QprePpS2plpS8bmlTfNnYZGACAgVl0sJyrYZUJzhZTDMrVfGB2etDhcuNwBTcpqY1GnPhNXKyX1mBtndESL0vZUAUyWHrzZhvj5btt5GzLgWRxphWqfepEZ3XJ88WFtos/B53Hu4HOzWrz0U=~3621431~3360325" },
+            { "name": "origin", "value": "https://www.citivelocity.com" },
+            { "name": "priority", "value": "u=1" },
+            { "name": "referer", "value": "https://www.citivelocity.com/login/" },
+            { "name": "sec-ch-ua", "value": "\"Chromium\";v=\"139\", \"Not;A=Brand\";v=\"99\"" },
+            { "name": "sec-ch-ua-mobile", "value": "?0" },
+            { "name": "sec-ch-ua-platform", "value": "\"Windows\"" },
+            { "name": "sec-fetch-dest", "value": "script" },
+            { "name": "sec-fetch-mode", "value": "cors" },
+            { "name": "sec-fetch-site", "value": "same-origin" },
+            { "name": "user-agent", "value": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.7258.5 Safari/537.36" }
+          ],
+        },
+        "response": {}
+      }
+    ]
+  }
+}
+```
+
+## Implementation Steps
+1. Import required Node.js modules (`fs`)
+2. Read the HAR file
+3. Parse the JSON content
+4. Filter and transform the entries
+5. Write the filtered content to the output file
+
+## Error Handling
+- Handle file read/write errors
+- Handle JSON parsing errors
+- Provide appropriate error messages
+
+
+
+## Expected Output
+- A filtered JSON file containing only the specified network traffic information
+- Console messages indicating success or errors during the conversion process
+
+## Testing
+1. Run the script: `node new-har-converter.js`
+2. Verify the output file structure
+3. Check if all essential information is preserved
